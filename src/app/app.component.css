@@ -1,0 +1,56 @@
+/* Password field + toggle */
+.password-field {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	position: relative;
+	width: 100%;
+	max-width: 520px; /* match widened inputs */
+}
+
+.password-field input {
+	padding-right: 3rem; /* space for toggle inside the input */
+	flex: 1 1 auto;
+}
+
+.toggle-visibility {
+	background: transparent;
+	border: none;
+	padding: 0.25rem;
+	cursor: pointer;
+	color: var(--gray-900);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute; /* position inside the password field */
+	right: 0.5rem;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.toggle-visibility:focus {
+	outline: 2px solid color-mix(in srgb, var(--pill-accent) 40%, transparent);
+	outline-offset: 2px;
+}
+
+/* Make labels appear above their inputs and add spacing */
+form label {
+	display: block;
+	margin-bottom: 0.25rem;
+	font-weight: 600;
+	color: var(--gray-900);
+}
+
+form input {
+	display: block;
+	width: 100%;
+	max-width: 520px; /* increased width */
+	padding: 0.5rem 0.6rem;
+	border: 1px solid color-mix(in srgb, var(--gray-700) 20%, transparent);
+	border-radius: 6px;
+}
+
+.validation {
+	margin-top: 0.25rem;
+}
+
