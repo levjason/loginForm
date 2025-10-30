@@ -26,6 +26,14 @@ input {
   border-radius: 6px;
 }
 
+/* Shared control width for inputs and buttons */
+.form-control-width {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+}
+
 .validation {
   margin-top: 0.25rem;
 }

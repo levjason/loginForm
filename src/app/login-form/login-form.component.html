@@ -1,16 +1,24 @@
 <form (ngSubmit)="submit()" #loginForm="ngForm">
     <cds-text-label for="username">Username</cds-text-label>
     <input id="username" name="username" type="text" [(ngModel)]="username" placeholder="Enter username" required
-        #usernameModel="ngModel" />
-
+        #usernameModel="ngModel" class="form-control-width" />
+    <div *ngIf="usernameModel.invalid && (usernameModel.dirty || usernameModel.touched)" class="cds--inline-notification cds--inline-notification--error "
+        role="alert">
+        <span class="cds--inline-notification__text-wrapper">
+            <span class="cds--inline-notification__title cds--inline-notification__title--error">
+                Username is required.
+            </span>
+        </span>
+    </div>
     <!-- Use Carbon Angular password label component -->
     <cds-password-label [invalid]="(passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)) === true"
         [invalidText]="getPasswordInvalidText()">
         Password
         <input id="password" name="password" cdsPassword [(ngModel)]="password" placeholder="Enter password"
-            #passwordModel="ngModel" />
+            #passwordModel="ngModel" class="cds--password-input cds form-control-width" />
     </cds-password-label>
     <cds-button-set>
-        <button cdsButton  type="submit" [disabled]="loginForm.invalid">Login</button>
+        <button cdsButton size="lg" type="submit" [disabled]="loginForm.invalid"
+            class="cds--btn--primary form-control-width">Login</button>
     </cds-button-set>
 </form>
