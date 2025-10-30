@@ -177,65 +177,7 @@
 
 <main class="main">
 
-  <form (ngSubmit)="submit()" #loginForm="ngForm">
-    <label for="username">Username</label>
-    <input
-      id="username"
-      name="username"
-      type="text"
-      [(ngModel)]="username"
-      placeholder="Enter username"
-      required
-      #usernameModel="ngModel"
-    />
-
-    <label for="password">Password</label>
-    <div class="password-field">
-      <input
-        id="password"
-        name="password"
-        [type]="passwordVisible ? 'text' : 'password'"
-        [(ngModel)]="password"
-        placeholder="Enter password"
-        required
-        minlength="8"
-        aria-describedby="password-hint"
-        #passwordModel="ngModel"
-      />
-
-      <!-- Show toggle only when there's content in the password field -->
-      <button
-        *ngIf="password?.length"
-        type="button"
-        class="toggle-visibility"
-        (click)="togglePasswordVisibility()"
-        [attr.aria-pressed]="passwordVisible"
-        [attr.aria-label]="passwordVisible ? 'Hide password' : 'Show password'"
-      >
-        <!-- Eye icon (visible) -->
-        <svg *ngIf="!passwordVisible" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path fill="currentColor" d="M12 5c-7 0-11 6.5-11 7s4 7 11 7 11-6.5 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
-          <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
-        </svg>
-        <!-- Eye-off icon (hidden) -->
-        <svg *ngIf="passwordVisible" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path fill="currentColor" d="M2 5.27L3.28 4 20 20.72 18.73 22 15.9 19.16C14.55 19.7 13.06 20 11.5 20 4.5 20 1 13.5 1 13.5c.95-1.91 3-4.85 6.12-6.94L2 5.27zM12 7c1.65 0 3.15.3 4.45.84L9.84 14.45A3 3 0 0 1 12 7z"/>
-        </svg>
-      </button>
-    </div>
-
-    <div id="password-hint" style="font-size:0.85rem;color:var(--gray-700)">Minimum 8 characters</div>
-
-    <!-- Validation messages for password -->
-    <div class="validation" *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)">
-      <div *ngIf="passwordModel.errors?.['required']" style="color:tomato">Password is required.</div>
-      <div *ngIf="passwordModel.errors?.['minlength']" style="color:tomato">
-        Password must be at least {{ passwordModel.errors?.['minlength']?.requiredLength }} characters.
-      </div>
-    </div>
-
-    <button type="submit" [disabled]="loginForm.invalid">Send</button>
-  </form>
+  <app-login-form></app-login-form>
 </main>
 
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->

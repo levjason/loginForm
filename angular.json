@@ -25,6 +25,7 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/@carbon/styles/css/styles.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -84,6 +85,7 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/@carbon/styles/css/styles.css",
               "src/styles.css"
             ],
             "scripts": []
