@@ -1,13 +1,14 @@
 form {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* equal spacing between rows */
+  gap: 16px; /* consistent spacing between rows */
   align-items: flex-start;
 }
 
+/* Base label styling; per-row gap controls spacing between label and control */
 label {
   display: block;
-  margin: 0; /* spacing handled by .form-row gap */
+  margin: 0;
   font-weight: 600;
   color: var(--gray-900);
 }
@@ -16,21 +17,40 @@ label {
 .form-row {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* spacing between label and control inside the row */
+  gap: 8px; /* 8px between label and control inside the row */
 }
 
-input {
+/* scope native input styles to form rows so Carbon components aren't affected */
+.form-row input {
   display: block;
   width: 100%;
   max-width: 520px;
   padding: 0.5rem 0.6rem;
   border: 1px solid color-mix(in srgb, var(--gray-700) 20%, transparent);
   border-radius: 6px;
+  box-sizing: border-box;
 }
 
-/* Shared control width for inputs and buttons */
+/* Shared control width for inputs, web components and buttons */
 .form-control-width {
   display: block;
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+}
+
+/* Ensure Carbon web components size like other controls when `.form-control-width` is applied */
+cds-text-input,
+cds-password-label,
+cds-text-input * {
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+}
+
+/* Make sure the password input inside cds-password-label follows the width class */
+.cds--password-input,
+.cds--password-input.cds {
   width: 100%;
   max-width: 520px;
   box-sizing: border-box;

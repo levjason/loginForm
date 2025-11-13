@@ -1,39 +1,25 @@
-<form (ngSubmit)="submit()" #loginForm="ngForm">
+<form [formGroup]="form" (ngSubmit)="submit()">
+
     <div class="form-row">
-        <cds-text-label for="username">Username</cds-text-label>
-        <input id="username" name="username" type="text" [(ngModel)]="username" placeholder="Enter username" required
-            #usernameModel="ngModel" class="form-control-width" />
-        <div *ngIf="usernameModel.invalid && (usernameModel.dirty || usernameModel.touched)"
-            class="cds--inline-notification cds--inline-notification--error " role="alert">
-            <span class="cds--inline-notification__text-wrapper">
-                <span class="cds--inline-notification__title cds--inline-notification__title--error">
-                    Username is required.
-                </span>
-            </span>
-        </div>
+        <!-- Username using Carbon web component wired to reactive form -->
+        <cds-text-input #usernameEl label="Username" id="username" placeholder="Enter username" class="form-control-width"
+            formControlName="username"
+            [invalid]="username.invalid && (username.dirty || username.touched)"
+            [invalidText]="'Username is required.'"
+            autocomplete="off"></cds-text-input>
     </div>
-    <!-- Use Carbon Angular password label component -->
+    <!-- Password using Carbon web-component cds-password bound to reactive form -->
     <div class="form-row">
-        <cds-password-label [invalid]="(passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)) === true"
-            [invalidText]="getPasswordInvalidText()">
-            Password
-            <input id="password" name="password" cdsPassword [(ngModel)]="password" placeholder="Enter password"
-                #passwordModel="ngModel" class="cds--password-input cds form-control-width" />
-            <div *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)"
-                class="cds--inline-notification cds--inline-notification--error " role="alert">
-                <span class="cds--inline-notification__text-wrapper">
-                    <span class="cds--inline-notification__title cds--inline-notification__title--error">
-                        Password is required.
-                    </span>
-                </span>
-            </div>
-        </cds-password-label>
+        <cds-password-input #passwordEl label="Password" id="password" placeholder="Enter password" class="form-control-width"
+            formControlName="password" autocomplete="off"
+            [invalid]="password.invalid && (password.dirty || password.touched)"
+            [invalidText]="'Password is required.'"></cds-password-input>
     </div>
-    <div class="form-row"></div>
     <div class="form-row">
         <cds-button-set>
-            <button cdsButton size="lg" type="submit" [disabled]="loginForm.invalid"
+            <button cdsButton size="lg" type="submit" [disabled]="form.invalid"
                 class="cds--btn--primary form-control-width">Login</button>
+            <button cdsButton type="button" (click)="simulateAutofill()" class="form-control-width">Simulate autofill</button>
         </cds-button-set>
     </div>
 </form>

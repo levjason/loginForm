@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "test:autofill": "node ./tools/playwright-autofill-test.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -20,6 +21,7 @@
     "@angular/router": "^17.3.0",
     "@carbon/icons": "^11.70.0",
     "@carbon/styles": "^1.93.1",
+    "@carbon/web-components": "latest",
     "carbon-components-angular": "^5.62.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -36,6 +38,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "playwright": "^1.56.1",
     "typescript": "~5.4.2"
   }
 }
