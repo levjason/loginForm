@@ -19,51 +19,33 @@ export class CdsTextInputValueAccessorDirective implements ControlValueAccessor,
   private onTouched: () => void = () => {};
 
   // events we listen to for value changes. Some web components emit `input`,
-  // `change`, or a custom `value-changed`/`valueChange` event with detail payload —
-  // listen to the common ones and extract value robustly.
-  private valueEvents = ['input', 'change', 'value-changed', 'valueChange'];
+  // Only listen for the native `input` event and Carbon's `value-changed` custom event.
+  // This keeps the directive lightweight while still catching programmatic updates
+  // that the web components emit using `value-changed`.
+  private valueEvents = ['input', 'value-changed'];
 
   private inputHandler = (e: Event) => {
     const host = this.el.nativeElement as any;
     // Try common locations for the new value
-    let v: any = undefined;
-    try {
-      v = host.value;
-    } catch (err) {
-      // ignore
-    }
-    // If the event carries the new value in detail, prefer that
-    if (v === undefined && (e as any).detail && (e as any).detail.value !== undefined) {
+    // Prefer the host's `value` property; if the custom event provides a detail
+    // payload use that. As a lightweight fallback, read the `value` attribute.
+    let v = host?.value;
+    if ((e as any).detail && (e as any).detail.value !== undefined) {
       v = (e as any).detail.value;
     }
-    // Fallback to attribute
-    if (v === undefined && host.getAttribute) {
+    if (v === undefined && host && host.getAttribute) {
       v = host.getAttribute('value');
     }
-    // Normalize undefined -> '' for form control
-    if (v === undefined) v = '';
+    if (v === undefined || v === null) v = '';
 
     try { console.debug('[CVA] value-change detected on', this.el.nativeElement?.tagName, 'value=', v, 'event=', e.type); } catch {}
     this.onChange(v);
   };
 
   private blurHandler = () => this.onTouched();
-  // probe handlers for autofill detection
-  private focusProbeHandler = () => {
-    // schedule a short re-check after focus (some browsers autofill on focus)
-    setTimeout(() => {
-      try {
-        const host = this.el.nativeElement as any;
-        const v = host?.value ?? (host.getAttribute ? host.getAttribute('value') : undefined) ?? '';
-        if (v) {
-          try { console.debug('[CVA] focus probe detected value on', this.el.nativeElement?.tagName, v); } catch {}
-          this.onChange(v);
-        }
-      } catch (e) {
-        // ignore
-      }
-    }, 200);
-  };
+  // Note: heavier autofocus/autofill probes have been intentionally removed
+  // in this trimmed implementation. If you need robust autofill detection,
+  // reintroduce startup/focus probes.
 
   constructor(private el: ElementRef<HTMLElement>) {}
 
@@ -82,26 +64,7 @@ export class CdsTextInputValueAccessorDirective implements ControlValueAccessor,
       // ignore
     }
 
-    // Startup probe: check current value after a short delay in case the browser autofilled
-    setTimeout(() => {
-      try {
-        const host = this.el.nativeElement as any;
-        const v = host?.value ?? (host.getAttribute ? host.getAttribute('value') : undefined) ?? '';
-        if (v) {
-          try { console.debug('[CVA] startup probe detected value on', this.el.nativeElement?.tagName, v); } catch {}
-          this.onChange(v);
-        }
-      } catch (e) {
-        // ignore
-      }
-    }, 250);
-
-    // Listen for focus to detect autofill performed on focus
-    try {
-      this.el.nativeElement.addEventListener('focus', this.focusProbeHandler as EventListener, true);
-    } catch (e) {
-      // ignore
-    }
+    // Note: startup/focus probes have been removed in this trimmed CVA.
   }
 
   writeValue(obj: any): void {
@@ -154,11 +117,7 @@ export class CdsTextInputValueAccessorDirective implements ControlValueAccessor,
       } catch (e) {
         // ignore
       }
-      try {
-        this.el.nativeElement.removeEventListener('focus', this.focusProbeHandler as EventListener, true);
-      } catch (e) {
-        // ignore
-      }
+      // focus listener removal removed in trimmed implementation
     } catch (e) {
       // ignore
     }
