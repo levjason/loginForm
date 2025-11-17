@@ -17,6 +17,10 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 export class CdsTextInputValueAccessorDirective implements ControlValueAccessor, AfterViewInit, OnDestroy {
   private onChange: (value: any) => void = () => {};
   private onTouched: () => void = () => {};
+  // timer for the startup probe
+  private _startupProbeTimer: any;
+  // last emitted value to avoid duplicate change notifications
+  private _lastEmittedValue: any = undefined;
 
   // events we listen to for value changes. Some web components emit `input`,
   // Only listen for the native `input` event and Carbon's `value-changed` custom event.
@@ -39,13 +43,27 @@ export class CdsTextInputValueAccessorDirective implements ControlValueAccessor,
     if (v === undefined || v === null) v = '';
 
     try { console.debug('[CVA] value-change detected on', this.el.nativeElement?.tagName, 'value=', v, 'event=', e.type); } catch {}
-    this.onChange(v);
+    this.emitIfChanged(v);
   };
 
   private blurHandler = () => this.onTouched();
-  // Note: heavier autofocus/autofill probes have been intentionally removed
-  // in this trimmed implementation. If you need robust autofill detection,
-  // reintroduce startup/focus probes.
+  // Focus probe: on focus, schedule a short re-check. Some browsers perform
+  // autofill on focus and may not emit host-level events; the focus probe
+  // catches that case with a single delayed check.
+  private focusProbeHandler = () => {
+    setTimeout(() => {
+      try {
+        const host = this.el.nativeElement as any;
+        const v = host?.value ?? (host.getAttribute ? host.getAttribute('value') : undefined) ?? '';
+        if (v) {
+          try { console.debug('[CVA] focus probe detected value on', this.el.nativeElement?.tagName, v); } catch {}
+          this.onChange(v);
+        }
+      } catch (e) {
+        // ignore
+      }
+    }, 200);
+  };
 
   constructor(private el: ElementRef<HTMLElement>) {}
 
@@ -63,8 +81,28 @@ export class CdsTextInputValueAccessorDirective implements ControlValueAccessor,
     } catch (e) {
       // ignore
     }
+    try {
+      // capture phase so focus inside the shadow DOM is caught
+      this.el.nativeElement.addEventListener('focus', this.focusProbeHandler as EventListener, true);
+    } catch (e) {
+      // ignore
+    }
 
-    // Note: startup/focus probes have been removed in this trimmed CVA.
+    // Single startup probe: check the host value once after a short delay to
+    // catch browser autofill that populated the inner input before events
+    // propagated. This is intentionally conservative (one probe only).
+    this._startupProbeTimer = setTimeout(() => {
+      try {
+        const host = this.el.nativeElement as any;
+        const v = host?.value ?? (host.getAttribute ? host.getAttribute('value') : undefined) ?? '';
+        if (v) {
+          try { console.debug('[CVA] startup probe detected value on', this.el.nativeElement?.tagName, v); } catch {}
+          this.emitIfChanged(v);
+        }
+      } catch (e) {
+        // ignore
+      }
+    }, 250);
   }
 
   writeValue(obj: any): void {
@@ -117,9 +155,27 @@ export class CdsTextInputValueAccessorDirective implements ControlValueAccessor,
       } catch (e) {
         // ignore
       }
-      // focus listener removal removed in trimmed implementation
+      try {
+        this.el.nativeElement.removeEventListener('focus', this.focusProbeHandler as EventListener, true);
+      } catch (e) {
+        // ignore
+      }
+      // clear startup probe timer if set
+      if (this._startupProbeTimer) {
+        try { clearTimeout(this._startupProbeTimer); } catch (e) { /* ignore */ }
+        this._startupProbeTimer = undefined;
+      }
     } catch (e) {
       // ignore
+    }
+  }
+
+  // Emit change only when value differs from last emitted value
+  private emitIfChanged(v: any) {
+    if (v === undefined || v === null) v = '';
+    if (this._lastEmittedValue !== v) {
+      this._lastEmittedValue = v;
+      try { this.onChange(v); } catch (e) { /* ignore */ }
     }
   }
 }
